@@ -4,7 +4,7 @@ const port = 3000;
 
 // Simple endpoint
 app.get('/', (req, res) => {
-  res.send('Hello, this is a simple Express API! test function');
+  res.send('Hello, this is a simple Express API! test 1');
 });
 
 // Start the server
