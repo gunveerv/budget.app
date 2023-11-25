@@ -1,36 +1,23 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
+const apiRoutes = require('./routes/apiRoutes');
 
-// Debug Purposes
-const DEBUG_INDEX = process.env.DEBUG || false; 
+const port = process.env.PORT || 3000;
 
 // Middleware
 dotenv.config({ path: './.env' })
 app.use(express.json());
 
-// Simple endpoint route handler
-app.get('/', (req, res) => {
-  res.send('Hello, this is a simple Express API for Budget.App!');
-  if (DEBUG_INDEX) {
-    console.log(req.body);
-  }
-});
+// Debug Purposes
+const DEBUG_INDEX = process.env.DEBUG || false; 
 
-// Status sample
-app.get("/status", (req, res) => {
-  const status = {
-    "Status": "Running",
-    "Message": "hello world"
-  };
-  if (DEBUG_INDEX) {
-    console.log(req.body);
-  }
-  res.send(status)
-}); 
+//routes 
+
+app.use('/api', apiRoutes);
+
 
 // Start the server
-const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
