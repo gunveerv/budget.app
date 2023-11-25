@@ -13,9 +13,7 @@ app.use(express.json());
 const DEBUG_INDEX = process.env.DEBUG || false; 
 
 //routes 
-
 app.use('/api', apiRoutes);
-
 
 // Start the server
 app.listen(port, () => {

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# runs and builds the docker container & image
+
 # Get the absolute path of the directory containing the script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
