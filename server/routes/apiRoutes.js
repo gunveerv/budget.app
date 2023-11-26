@@ -3,8 +3,8 @@
 const express = require('express');
 const router = express.Router();
 const dotenv = require('dotenv');
-const db = require('../db/dbConn');
 const Record = require('../models/record');
+const Category = require('../modules/category');
 
 // Middleware
 dotenv.config({ path: '../.env' })
@@ -34,12 +34,11 @@ router.get("/record", asyncMiddleware(async (req, res) => {
 
 // Get categories
 router.get("/categories", (req, res) => {
-  const status = {
-    "categories": "1,2,3,4,5",
-    "data": "json"
-  };
+  const { categories, serializeCategories } = Category();
+  const status = serializeCategories;
+  console.log(status);
   if (DEBUG_INDEX) {
-    console.log('GET apiRoutes/categories' , JSON.stringify(req.body));
+    console.log('GET apiRoutes/categories' , JSON.stringify(status));
   }
   res.status(200).send(status)
 }); 
@@ -55,7 +54,7 @@ router.post("/record", asyncMiddleware(async (req, res) => {
   if (DEBUG_INDEX) {
     console.log('POST apiRoutes/records' , JSON.stringify(req.body));
   }
-  res.status(200).send(`POST sent to records: ${saveRecord}`);
+  res.status(200).send(`POST sent to Database with a new Record: ${saveRecord}`);
 })); 
 
 module.exports = router;
