@@ -21,12 +21,12 @@ docker build -t $IMAGE_NAME .
 
 # Raspberry Pi
 if [ $IS_RBP == "true" ]; then
-    echo "... running RBP Docker compose"
+    echo "Running RBP Docker compose"
     IP=$(hostname -I | cut -f1 -d' ')
     echo -e "\e[32m Access on local network: ${IP}:3000\e[0m"
     docker compose up
 # Other     
 else    
-    echo "... running  non-RBP Docker-compose"
+    echo "Running  non-RBP Docker-compose"
     docker-compose up
 fi

@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 // Middleware
 dotenv.config({ path: '../.env' })
 
-console.log(process.env.DB_URI);
+// Connect to MongoDB using URI
 const dbURI = process.env.DB_URI;
 mongoose.connect(dbURI);
 
@@ -12,7 +12,7 @@ const db = mongoose.connection;
 
 // Routes for connection
 db.on('connected', () => {
-  console.log(`Connected to MongoDB at ${dbURI}`);
+  console.log(`Connected to MongoDB`);
 });
 
 db.on('error', (err) => {

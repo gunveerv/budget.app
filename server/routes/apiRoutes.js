@@ -4,9 +4,13 @@ const express = require('express');
 const router = express.Router();
 const dotenv = require('dotenv');
 const db = require('../db/dbConn');
+const Record = require('../models/record');
 
 // Middleware
 dotenv.config({ path: '../.env' })
+const asyncMiddleware = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 // Debug Purposes
 const DEBUG_INDEX = process.env.DEBUG || false; 
@@ -20,16 +24,13 @@ router.get('/status', (req, res) => {
   });
   
 // Get record
-router.get("/record", (req, res) => {
-  const status = {
-    "key": 123,
-    "data": "json"
-  };
+router.get("/record", asyncMiddleware(async (req, res) => {
+  const records = await Record.find({});
   if (DEBUG_INDEX) {
-    console.log('GET apiRoutes/records' , JSON.stringify(req.body));
+    console.log('GET apiRoutes/records' , JSON.stringify(records));
   }
-  res.status(200).send(status)
-}); 
+  res.status(200).send(records)
+})); 
 
 // Get categories
 router.get("/categories", (req, res) => {
@@ -45,7 +46,8 @@ router.get("/categories", (req, res) => {
 
 // Post categories
 router.post("/record", (req, res) => {
-  const data = JSON.stringify(req.body)
+  const newRecord = new Record(JSON.stringify(req.body));
+  
   if (DEBUG_INDEX) {
     console.log('POST apiRoutes/records' , data);
   }

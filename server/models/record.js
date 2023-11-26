@@ -23,6 +23,9 @@ const recordSchema = new mongoose.Schema({
     default: Date.now,
     required: true,
   },
+},
+{
+  collection: 'budget-backend'
 });
 
 const Record = mongoose.model('Record', recordSchema);
