@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const dotenv = require('dotenv');
+const db = require('../db/dbConn');
 
 // Middleware
 dotenv.config({ path: '../.env' })
