@@ -45,13 +45,17 @@ router.get("/categories", (req, res) => {
 }); 
 
 // Post categories
-router.post("/record", (req, res) => {
-  const newRecord = new Record(JSON.stringify(req.body));
-  
+router.post("/record", asyncMiddleware(async (req, res) => {
+  const newRecord = new Record({
+    name: req.body.name,
+    category: req.body.category,
+    cost: req.body.cost,
+  });
+  const saveRecord = await newRecord.save();
   if (DEBUG_INDEX) {
-    console.log('POST apiRoutes/records' , data);
+    console.log('POST apiRoutes/records' , JSON.stringify(req.body));
   }
-  res.status(200).send(`POST sent to records: ${JSON.stringify(data)}`)
-}); 
+  res.status(200).send(`POST sent to records: ${saveRecord}`);
+})); 
 
 module.exports = router;
