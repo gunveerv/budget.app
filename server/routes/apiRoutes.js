@@ -75,7 +75,30 @@ router.post("/record", asyncMiddleware(async (req, res) => {
     console.log('POST apiRoutes/records' , JSON.stringify(req.body));
   }
 
-  res.status(200).send(`POST sent to Database with a new Record: ${saveRecord}`);
+  res.status(200).send(`POST sent with Record: ${saveRecord}`);
 })); 
+
+// Patch record
+router.patch("/record/update/:id", asyncMiddleware(async (req, res) => {
+
+  // Find Record
+  const id = req.params.id;
+  const newRecord = await Record.findById(id);
+
+  // Apply Updates & Save
+  Object.keys(req.body).forEach((key) => {
+    if (!(key in newRecord)) {
+      res.status(400).send(`PATCH failed, Record id ${id}: key did not exist`);
+    };
+    newRecord[key] = req.body[key];
+  });
+  const saveRecord = await newRecord.save();
+
+  if (DEBUG_INDEX) {
+    console.log(`PATCH apiRoutes/record/update/${id}: ${saveRecord}`);
+  }
+
+  res.status(200).send(`PATCH sent with Record id ${id}`);
+}));
 
 module.exports = router;
