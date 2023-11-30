@@ -2,11 +2,9 @@
 
 * A simple budget app with API requests to a database to use as a financial tracker
 
-## Docker
+## Docker Setup
 
 ### Backend (./server)
-
-#### Docker Setup:
 
 * `docker build -t {my-budget-app} .` //builds the image
 * `docker-compose up` //makes the container 
