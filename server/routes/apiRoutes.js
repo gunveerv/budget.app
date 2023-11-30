@@ -18,7 +18,11 @@ const DEBUG_INDEX = process.env.DEBUG || false;
 
 // Status endpoint
 router.get('/status', (req, res) => {
-    res.status(200).send('Hello, this is a simple Express API for Budget.App!');
+    status = {
+      message: 'Hello, this is a simple Express API for Budget.App!',
+      success: true
+    };
+    res.status(200).send(status);
     if (DEBUG_INDEX) {
       console.log('GET apiRoutes/status' , JSON.stringify(req.body));
     }
@@ -75,7 +79,7 @@ router.post("/record", asyncMiddleware(async (req, res) => {
     console.log('POST apiRoutes/records' , JSON.stringify(req.body));
   }
 
-  res.status(200).send(`POST sent with Record: ${saveRecord}`);
+  res.status(201).send(`POST sent with Record: ${saveRecord}`);
 })); 
 
 // Patch record
