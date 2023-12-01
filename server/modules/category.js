@@ -8,7 +8,7 @@ function Categories() {
     const GROCERIES = 'Groceries';
     const HOUSING = 'Housing';
     const TRANSPORTATION = 'Transportation';
-    const INVESTMENT = 'INVESTMENT';
+    const INVESTMENT = 'Investment';
     const ONE_TIME = 'One Time';
 
     const allCatergories = {

@@ -5,6 +5,16 @@ const apiRoutes = require('./routes/apiRoutes');
 
 const port = process.env.PORT || 3000;
 
+// Add Access Control Allow Origin headers
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 // Middleware
 dotenv.config({ path: './.env' })
 app.use(express.json());
