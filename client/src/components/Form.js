@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Select, MenuItem, Button, Box, FormControl, InputLabel, TextField } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useForm } from 'react-hook-form';
+
+const isDEBUG = process.env.DEBUG;
 
 const Form = () => {
+    const [loading, setLoading] = useState(true);
+    const { register, handleSubmit } = useForm();
     const [formData, setFormData] = useState({
         name: '',
         category: '',
         cost: '', //number
         date: '', //date
     });
+
+    const defaultData = {
+        name: '',
+        category: '',
+        cost: '',
+        date: '',
+    }
 
     const [categories, setCategories] = useState([]);
 
@@ -29,6 +42,8 @@ const Form = () => {
             setCategories(categoriesArray); // Update state with fetched categories
           } catch (error) {
             console.error('Error fetching categories:', error);
+          } finally {
+            setLoading(false);
           }
         };
     
@@ -48,14 +63,41 @@ const Form = () => {
         });
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Your form submission logic here, e.g., API call, etc.
-        console.log('Form submitted with data:', formData);
+    const handleDateChange = (date) => {
+        // Ensure date is a valid Date object
+        if (!isNaN(date)) {
+            setFormData({
+                ...formData,
+                date: date.toISOString(),
+            });
+        }
+      };
+
+    const onSubmit = async () => {
+        try {
+            console.log(formData);
+            console.log(JSON.stringify(formData));
+            const response = await fetch('http://10.0.0.244:8080/api/record', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+              });
+            const data = await response.json();
+
+            if (isDEBUG) {
+                console.log('Sent a POST with data: ', JSON.stringify(formData));
+                console.log('Response Receieved: ', data);
+            }
+            
+          } catch (error) {
+            console.error('Error sending POST to a record: ', error);
+          }
     };
 
     return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
         {/* Form Fields */}
         <FormControl>
             <TextField
@@ -80,7 +122,7 @@ const Form = () => {
                 onChange={handleChange}
             >   
                 {categories.map((category) => (
-                <MenuItem key={category.value} value={category.label}>
+                <MenuItem key={category.label} value={category.label}>
                 {category.label}
                 </MenuItem>
                 ))}
@@ -100,18 +142,19 @@ const Form = () => {
         </FormControl>
 
         <FormControl>
-            <TextField
+            <DatePicker
                 label="Date"
-                variant="outlined"
-                name="date"
+                inputFormat="MM/dd/yyyy"
                 value={formData.date}
-                onChange={handleChange}
+                name="date"
+                onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} variant="outlined" />}
             />
         </FormControl>
 
         {/* Submit button */}
         <Box mt={2}>
-            <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained" color="primary" disabled={loading || JSON.stringify(formData) === JSON.stringify(defaultData)}>
             Submit
             </Button>
         </Box>

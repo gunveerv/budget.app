@@ -12,6 +12,7 @@ dotenv.config({ path: '../.env' })
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
+router.use(express.json());
 
 // Debug Purposes
 const DEBUG_INDEX = process.env.DEBUG || false; 
@@ -49,7 +50,38 @@ router.get("/record", asyncMiddleware(async (req, res) => {
     console.log('GET apiRoutes/records filter' , JSON.stringify(filter));
   }
 
-  res.status(200).send(records)
+  res.status(200).send(records);
+})); 
+
+// Get record ids
+router.get("/record/ids", asyncMiddleware(async (req, res) => {
+  // Query Filter
+  const filter = {};
+
+  // Date Filter 
+  const { startDate, endDate } = req.query;
+  if (startDate && endDate) {
+    filter.date = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
+  }
+  // Run Query
+  const records = await Record.find(filter);
+
+  const ids = [];
+
+  records.forEach((records) => {
+    const id = records.id;
+    ids.push(id);
+  });
+  
+  if (DEBUG_INDEX) {
+    console.log('GET apiRoutes/records/ids' , JSON.stringify(records));
+    console.log('GET apiRoutes/records/ids filter' , JSON.stringify(filter));
+  }
+
+  res.status(200).send({ids});
 })); 
 
 // Get categories
@@ -69,8 +101,8 @@ router.post("/record", asyncMiddleware(async (req, res) => {
   const newRecord = new Record({
     name: req.body.name,
     category: req.body.category,
-    cost: req.body.cost,
-    date: req.body.date ?? Date.now(),
+    cost: Number(req.body.cost),
+    date: req.body.date ? new Date(req.body.date) : Date.now(),
   });
 
   const saveRecord = await newRecord.save();
@@ -79,7 +111,7 @@ router.post("/record", asyncMiddleware(async (req, res) => {
     console.log('POST apiRoutes/records' , JSON.stringify(req.body));
   }
 
-  res.status(201).send(`POST sent with Record: ${saveRecord}`);
+  res.status(201).json({ message: 'Record created successfully', record: saveRecord });
 })); 
 
 // Patch record
@@ -103,6 +135,32 @@ router.patch("/record/update/:id", asyncMiddleware(async (req, res) => {
   }
 
   res.status(200).send(`PATCH sent with Record id ${id}`);
+}));
+
+// Delete record
+router.delete("/record", asyncMiddleware(async (req, res) => {
+  const ids = req.body.ids;
+  const deleteRecords = {
+    successful: [],
+    failed: []
+  };
+
+  for (const id of ids) {
+    const getRecord = await Record.findById(id);
+    if (getRecord) {
+      const deleteRecord = await Record.deleteOne({ _id: id });
+      deleteRecords.successful.push(id);
+
+      if (DEBUG_INDEX) {
+        console.log(`DELETE apiRoutes/record/update/${id}: ${JSON.stringify(deleteRecord)}`);
+      }
+    } else {
+      console.error(`Cannot delete Record with id ${id}, Record not found`);
+      deleteRecords.failed.push(id);
+    }
+  };
+
+  res.status(200).send(`Delete sent with Record ids ${JSON.stringify(ids)}: ${JSON.stringify(deleteRecords)}`);
 }));
 
 module.exports = router;
