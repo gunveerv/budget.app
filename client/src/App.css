@@ -11,6 +11,10 @@
   margin-top: 2%;
 }
 
+.table {
+  justify-content: center;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

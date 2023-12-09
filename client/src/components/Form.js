@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Select, MenuItem, Button, Box, FormControl, InputLabel, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useForm } from 'react-hook-form';
+import Alert from '@mui/material/Alert';
 
 const isDEBUG = process.env.DEBUG;
 
 const Form = () => {
     const [loading, setLoading] = useState(true);
+    const [alert, setAlert] = useState(false);
     const { register, handleSubmit } = useForm();
+    const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         category: '',
@@ -22,9 +25,8 @@ const Form = () => {
         date: '',
     }
 
-    const [categories, setCategories] = useState([]);
-
     useEffect(() => {
+        let isMounted = true;
         // Fetch categories from the API
         const fetchCategories = async () => {
           try {
@@ -38,16 +40,26 @@ const Form = () => {
                 value,
                 label,
             }));
+
+            // Update state with fetched categories
+            if (isMounted) {
+                setCategories(categoriesArray);
+            }
             
-            setCategories(categoriesArray); // Update state with fetched categories
           } catch (error) {
             console.error('Error fetching categories:', error);
           } finally {
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
           }
         };
     
         fetchCategories();
+
+        return () => {
+            isMounted = false; // Component unmounted, update the variable
+        };
     }, []);
 
 
@@ -73,10 +85,9 @@ const Form = () => {
         }
       };
 
-    const onSubmit = async () => {
+    const onSubmit = async (event) => {
+        // event.preventDefault();
         try {
-            console.log(formData);
-            console.log(JSON.stringify(formData));
             const response = await fetch('http://10.0.0.244:8080/api/record', {
                 method: 'POST',
                 headers: {
@@ -85,6 +96,16 @@ const Form = () => {
                 body: JSON.stringify(formData),
               });
             const data = await response.json();
+
+            setAlert(true);
+
+            // After 3 seconds set the show value to false
+            const timeId = setTimeout(() => {
+                setAlert(false);
+                const reloadId = setTimeout(() => {
+                    window.location.reload(false);
+                }, 1000);
+            }, 2000);
 
             if (isDEBUG) {
                 console.log('Sent a POST with data: ', JSON.stringify(formData));
@@ -157,6 +178,10 @@ const Form = () => {
             <Button type="submit" variant="contained" color="primary" disabled={loading || JSON.stringify(formData) === JSON.stringify(defaultData)}>
             Submit
             </Button>
+            {alert ?
+                <Alert variant="outlined" severity="success" size="small">Successfully Uploaded!</Alert> 
+                : null
+            }
         </Box>
         </form>
     );
