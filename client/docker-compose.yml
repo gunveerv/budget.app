@@ -3,6 +3,8 @@ services:
   api:
     container_name: ${CONTAINER_NAME}
     image: ${IMAGE_NAME}
+    volumes:
+      - ./client:/usr/src/client
     working_dir: /usr/src/client
     ports:
       - "3000:3000"

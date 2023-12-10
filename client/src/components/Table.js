@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { Box } from '@mui/material';
-// import { DataGrid } from '@mui/x-data-grid'; //TODO
+import { DataGrid } from '@mui/x-data-grid'; //TODO
 
 const isDEBUG = process.env.DEBUG;
 
@@ -11,8 +11,8 @@ const [records, setRecords] = useState([]);
 const [loading, setLoading] = useState(true);
 
 const columns = [
-  { field: 'Name', headerName: 'Name', width: 150 },
-  { field: 'category', headerName: 'Category', width: 250 },
+  { field: 'name', headerName: 'Name', width: 250,  wrap: true },
+  { field: 'category', headerName: 'Category', width: 250,  wrap: true },
   { field: 'cost', headerName: 'Cost', width: 150 },
   { field: 'date', headerName: 'Date', width: 150 },
 ];
@@ -26,37 +26,40 @@ const fetchRecords = async () => {
     console.error('Error fetching records:', error);
   } finally {
     setLoading(false);
+    console.log(records);
   }
 };
   
 useEffect(() => {
-
   fetchRecords();
 }, []); // Run once when the component mounts
 
     return (
-        <Box className="body">
-            <table>
-            <thead>
-                <tr>
-                    <th className="table">Name</th>
-                    <th className="table">Category</th>
-                    <th className="table">Cost</th>
-                    <th className="table">Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {records.map(record => (
-                    <tr key={record._id}>
-                        <td className="table">{record.name}</td>
-                        <td className="table">{record.category}</td>
-                        <td className="table">{record.cost}</td>
-                        <td className="table">{record.date.split('T')[0]}</td>
-                    </tr>
-                ))}
-            </tbody>
-            </table>
-        </Box>
+      <Box className="table" style={{ 
+        height: '60vh', 
+        width: '75%', 
+        margin: 'auto', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+      }}>
+        <DataGrid
+          rows={records}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10, 25]}
+          // checkboxSelection
+          getRowId={(row) => row._id}
+          cellClassName={(params) =>
+            `custom-cell ${params.field}-${params.value}`
+          }
+        />
+      </Box>
     );
 };
 

@@ -3,6 +3,11 @@
   margin-top: 1%;
 }
 
+.dark {
+  background-color: #1f2023 ;
+  color: #fafafa;
+}
+
 .body {
   display: flex;
   align-items: center;
@@ -13,6 +18,18 @@
 
 .table {
   justify-content: center;
+}
+
+.form{ 
+  margin-top: 5%;
+}
+
+.success {
+  width: '75%';
+  margin: 'auto'; 
+  display: 'flex'; 
+  align-items: 'center'; 
+  justify-content: 'center'; 
 }
 
 .App-logo {

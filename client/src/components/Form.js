@@ -118,7 +118,7 @@ const Form = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
         {/* Form Fields */}
         <FormControl>
             <TextField
@@ -179,7 +179,18 @@ const Form = () => {
             Submit
             </Button>
             {alert ?
-                <Alert variant="outlined" severity="success" size="small">Successfully Uploaded!</Alert> 
+                <Alert 
+                    variant="outlined" 
+                    severity="success" 
+                    size="small" 
+                    style={{
+                        width:'25%', 
+                        margin: 'auto', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                }}>
+                    Successfully Uploaded!</Alert> 
                 : null
             }
         </Box>
