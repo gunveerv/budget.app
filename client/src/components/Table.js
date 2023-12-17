@@ -5,7 +5,7 @@ import { DataGrid } from '@mui/x-data-grid'; //TODO
 
 const isDEBUG = process.env.DEBUG;
 
-const Table = () => {
+const Table = ({ refreshData, updateRefresh }) => {
 
 const [records, setRecords] = useState([]);
 const [loading, setLoading] = useState(true);
@@ -16,23 +16,23 @@ const columns = [
   { field: 'cost', headerName: 'Cost', width: 150 },
   { field: 'date', headerName: 'Date', width: 150 },
 ];
-
-const fetchRecords = async () => {
-  try {
-    const response = await fetch('http://10.0.0.244:8080/api/record');
-    const data = await response.json();
-    setRecords(data);
-  } catch (error) {
-    console.error('Error fetching records:', error);
-  } finally {
-    setLoading(false);
-    console.log(records);
-  }
-};
   
 useEffect(() => {
+  const fetchRecords = async () => {
+    try {
+      const response = await fetch('http://10.0.0.244:8080/api/record');
+      const data = await response.json();
+      setRecords(data);
+    } catch (error) {
+      console.error('Error fetching records:', error);
+    } finally {
+      setLoading(false);
+      updateRefresh(false);
+      // console.log(records);
+    }
+  };
   fetchRecords();
-}, []); // Run once when the component mounts
+}, [refreshData]); // Run once when the component mounts
 
     return (
       <Box className="table" style={{ 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Select, MenuItem, Button, Box, FormControl, InputLabel, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useForm } from 'react-hook-form';
@@ -6,24 +6,20 @@ import Alert from '@mui/material/Alert';
 
 const isDEBUG = process.env.DEBUG;
 
-const Form = () => {
+const defaultData = {
+    name: '',
+    category: '',
+    cost: '',
+    date: '',
+}
+
+const Form = ({ onFormSubmit }) => {
     const [loading, setLoading] = useState(true);
     const [alert, setAlert] = useState(false);
     const { register, handleSubmit } = useForm();
     const [categories, setCategories] = useState([]);
-    const [formData, setFormData] = useState({
-        name: '',
-        category: '',
-        cost: '', //number
-        date: '', //date
-    });
-
-    const defaultData = {
-        name: '',
-        category: '',
-        cost: '',
-        date: '',
-    }
+    const [formData, setFormData] = useState(defaultData);
+    const timeoutRef = useRef(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -59,6 +55,7 @@ const Form = () => {
 
         return () => {
             isMounted = false; // Component unmounted, update the variable
+            clearTimeout(timeoutRef.current);
         };
     }, []);
 
@@ -99,21 +96,24 @@ const Form = () => {
 
             setAlert(true);
 
-            // After 3 seconds set the show value to false
-            const timeId = setTimeout(() => {
+            // After timeout set the show value to false
+            timeoutRef.current = setTimeout(() => {
                 setAlert(false);
-                const reloadId = setTimeout(() => {
-                    window.location.reload(false);
-                }, 1000);
-            }, 2000);
+            }, 3000);
 
             if (isDEBUG) {
                 console.log('Sent a POST with data: ', JSON.stringify(formData));
                 console.log('Response Receieved: ', data);
             }
+
+            // Notify the parent component about the form submission
+            onFormSubmit(true);
             
           } catch (error) {
             console.error('Error sending POST to a record: ', error);
+          } finally {
+            //clear variables
+            setFormData(defaultData);  
           }
     };
 
@@ -169,7 +169,7 @@ const Form = () => {
                 value={formData.date}
                 name="date"
                 onChange={handleDateChange}
-                renderInput={(params) => <TextField {...params} variant="outlined" />}
+                renderInput={(params) => <TextField {...params} variant="outlined" error={false}/>}
             />
         </FormControl>
 
@@ -190,7 +190,7 @@ const Form = () => {
                         alignItems: 'center', 
                         justifyContent: 'center',
                 }}>
-                    Successfully Uploaded!</Alert> 
+                    New Entry Successfully Added!</Alert> 
                 : null
             }
         </Box>
