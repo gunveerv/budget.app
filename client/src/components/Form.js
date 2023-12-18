@@ -169,7 +169,7 @@ const Form = ({ onFormSubmit }) => {
                 value={formData.date}
                 name="date"
                 onChange={handleDateChange}
-                renderInput={(params) => <TextField {...params} variant="outlined" error={false}/>}
+                TextField={(params) => <TextField {...params} variant="outlined" error={false}/>}
             />
         </FormControl>
 
